@@ -1,3 +1,4 @@
+//from jiuzhang
 public class LFUCache {
 
     private final Map<Integer, CacheNode> cache;
@@ -110,13 +111,15 @@ public class LFUCache {
     public boolean containsKey(int key) {
         return this.cache.containsKey(key);
     }
-
+    
+    // create a frequencyList with init size = 2 * capacity - 1
     private void initFrequencyList() {
         for (int i = 0; i <= maxFrequency; i++) {
             frequencyList[i] = new LinkedHashSet<CacheNode>();
         }
     }
 
+    // delete target number elements in frequencylist with lowestFrequency count
     private void doEviction() {
         int currentlyDeleted = 0;
         double target = 1; // just one
@@ -145,7 +148,8 @@ public class LFUCache {
         newNodes.add(currentNode);
         currentNode.frequency = nextFrequency;
     }
-
+    
+    // find next frequency in frequencyList that the count of elements for this frequency is not empty.
     private void findNextLowestFrequency() {
         while (lowestFrequency <= maxFrequency && frequencyList[lowestFrequency].isEmpty()) {
             lowestFrequency++;
