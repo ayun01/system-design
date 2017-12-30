@@ -1,0 +1,67 @@
+# If the maximal interval is [x, y], and it belongs to machine id z, when you add a new machine with id n, you should divide [x, y, z] into two intervals:
+# 
+# [x, (x + y) / 2, z] and [(x + y) / 2 + 1, y, n]
+# 
+# Example
+# for n = 1, return
+# 
+# [
+#   [0,359,1]
+# ]
+# represent 0~359 belongs to machine 1.
+# 
+# for n = 2, return
+# 
+# [
+#   [0,179,1],
+#   [180,359,2]
+# ]
+# for n = 3, return
+# 
+# [
+#   [0,89,1]
+#   [90,179,3],
+#   [180,359,2]
+# ]
+# for n = 4, return
+# 
+# [
+#   [0,89,1],
+#   [90,179,3],
+#   [180,269,2],
+#   [270,359,4]
+# ]
+# for n = 5, return
+# 
+# [
+#   [0,44,1],
+#   [45,89,5],
+#   [90,179,3],
+#   [180,269,2],
+#   [270,359,4]
+# ]
+
+class Solution:
+    """
+    @param: n: a positive integer
+    @return: n x 3 matrix
+    """
+    def consistentHashing(self, n):
+        results = [[0,359,1]]
+
+        # split n times
+        for i in xrange(1,n):
+            chooseIndex = 0
+            for j in xrange(1, i):
+                if results[j][1] - results[j][0] > results[chooseIndex][1] - results[chooseIndex][0]:
+                    # move to next range needed to split
+                    chooseIndex = j
+            
+            x = results[chooseIndex][0]
+            y = results[chooseIndex][1]
+            z = i + 1
+            
+            results[chooseIndex][1] = (x + y) / 2
+            results.append([(x + y) / 2 + 1, y, z])
+            
+        return results
