@@ -9,8 +9,9 @@ public class LFUCache {
 
     // @param capacity, an integer
     public LFUCache(int capacity) {
-        // Write your code here
+        // cache = key + cacheNode
         this.cache = new HashMap<Integer, CacheNode>(capacity);
+        // keep the order as they added to the set
         this.frequencyList = new LinkedHashSet[capacity * 2];
         this.lowestFrequency = 0;
         this.maxFrequency = capacity * 2 - 1;
@@ -22,8 +23,9 @@ public class LFUCache {
     // @param value, an integer
     // @return nothing
     public void set(int key, int value) {
-        // Write your code here
         CacheNode currentNode = cache.get(key);
+        // if key doesn't exist, if reach capacity, evict elements
+        // add current node to frequency0 list
         if (currentNode == null) {
             if (cache.size() == maxCacheSize) {
                 doEviction();
@@ -34,15 +36,17 @@ public class LFUCache {
             cache.put(key, currentNode);
             lowestFrequency = 0;
         } else {
+            // if key exists, update value
             currentNode.v = value;
         }
+        // increase frequency
         addFrequency(currentNode);
     }
 
     public int get(int key) {
-        // Write your code here
         CacheNode currentNode = cache.get(key);
         if (currentNode != null) {
+            // increase frequency
             addFrequency(currentNode);
             return currentNode.v;
         } else {
@@ -50,20 +54,27 @@ public class LFUCache {
         }
     }
 
+    // increase currentNode's frequency
     public void addFrequency(CacheNode currentNode) {
         int currentFrequency = currentNode.frequency;
+        // if less than maxFrequency
         if (currentFrequency < maxFrequency) {
             int nextFrequency = currentFrequency + 1;
+            //increase currentNode's frequency and move it to next level frequency
             LinkedHashSet<CacheNode> currentNodes = frequencyList[currentFrequency];
             LinkedHashSet<CacheNode> newNodes = frequencyList[nextFrequency];
             moveToNextFrequency(currentNode, nextFrequency, currentNodes, newNodes);
+            // 等价于 update currentNode 的value
             cache.put(currentNode.k, currentNode);
+            // if currentNode is lowestFrequency and lowestFrequency list is empty
+            // lowestFrequency = next level
             if (lowestFrequency == currentFrequency && currentNodes.isEmpty()) {
                 lowestFrequency = nextFrequency;
             }
         } else {
             // Hybrid with LRU: put most recently accessed ahead of others:
             LinkedHashSet<CacheNode> nodes = frequencyList[currentFrequency];
+            // 等价于把最老的给移除
             nodes.remove(currentNode);
             nodes.add(currentNode);
         }
@@ -141,6 +152,7 @@ public class LFUCache {
         }
     }
 
+    // move currentNode from currentNodes to newNodes with frequency = nextFrequency
     private void moveToNextFrequency(CacheNode currentNode, int nextFrequency,
                                      LinkedHashSet<CacheNode> currentNodes,
                                      LinkedHashSet<CacheNode> newNodes) {
