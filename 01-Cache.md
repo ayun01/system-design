@@ -24,6 +24,7 @@ https://github.com/ayun01/system-design/blob/master/LFU-cache.java
 # LRU
 
 实现(java)：
+https://github.com/ayun01/system-design/blob/master/LRU-cache.java
 1. 双向链表来表示使用的frequency，越靠head的是越久之前使用的，越靠tail的是最近才使用过的。
 2. HashMap 作为cache保存value。其值指向每个node.
 
